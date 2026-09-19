@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>RRL Research Assistant</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F0E5D4;
+    --surface:#F7F0E3;
+    --surface-2:#EDE0CB;
+    --surface-3:#E4D5B8;
+    --border: rgba(61,55,46,0.16);
+    --border-soft: rgba(61,55,46,0.09);
+    --text:#3D372E;
+    --text-dim: rgba(61,55,46,0.66);
+    --text-faint: rgba(61,55,46,0.44);
+    --accent:#8C9657;
+    --accent-hover:#7C8649;
+    --accent-ink:#3D372E;
+    --accent-2:#3D372E;
+    --accent-2-hover:#524A3D;
+    --accent-2-ink:#F7F0E3;
+    --danger:#AE4A3A;
+    --radius-card:16px;
+    --radius-control:12px;
+    --radius-pill:9999px;
+    --shadow-card: 0 10px 28px -10px rgba(61,55,46,.28);
+    --font:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --transition: all .25s var(--ease);
+    --maxw:1080px;
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,p,ul,form{ margin:0; }
+  button{ font:inherit; }
+  input,textarea,select{ font:inherit; }
+  a{ color:var(--accent-2); }
+
+  /* ---------- Header ---------- */
+  .site-header{ padding:2.5rem 1.5rem 1.75rem; border-bottom:1px solid var(--border-soft); }
+  .header-inner{ max-width:var(--maxw); margin:0 auto; display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:1.25rem; }
+  .brand h1{ font-family:var(--font); font-weight:800; font-size:clamp(1.55rem,3vw,2.1rem); letter-spacing:-0.01em; }
+  .brand .tagline{ color:var(--text-dim); font-size:.95rem; margin-top:.4rem; max-width:52ch; }
+  .header-controls{ display:flex; align-items:flex-end; gap:1rem; flex-wrap:wrap; }
+  .counter-chip{ background:var(--surface-2); border:1px solid var(--border); padding:.55rem .95rem; border-radius:var(--radius-pill); font-size:.82rem; color:var(--text-dim); white-space:nowrap; }
+  .style-select-wrap{ display:flex; flex-direction:column; gap:.3rem; }
+  .style-select-wrap label{ margin-bottom:0; }
+
+  /* ---------- Layout ---------- */
+  main{ max-width:var(--maxw); margin:0 auto; padding:2.25rem 1.5rem 4rem; display:flex; flex-direction:column; gap:2.5rem; }
+  .input-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:1.5rem; align-items:start; }
+
+  /* ---------- Card / index-tab motif ---------- */
+  .card{
+    position:relative;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-card);
+    padding:1.5rem;
+    box-shadow:var(--shadow-card);
+  }
+  .card::before{
+    content:'';
+    position:absolute;
+    top:-7px; left:1.75rem;
+    width:2.5rem; height:7px;
+    background:var(--accent);
+    border-radius:var(--radius-pill);
+  }
+  .card.card-output::before{ background:var(--accent-2); }
+
+  .card h2{ font-family:var(--font); font-size:1.2rem; font-weight:700; margin-bottom:.3rem; }
+  .card .hint{ color:var(--text-dim); font-size:.85rem; margin-bottom:1.1rem; }
+
+  /* ---------- Form controls ---------- */
+  label{ display:block; font-size:.78rem; color:var(--text-dim); margin-bottom:.3rem; font-weight:600; }
+  label span{ font-weight:400; color:var(--text-faint); }
+  input[type=text], input[type=number], textarea, select{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:var(--radius-control);
+    padding:.65rem .85rem;
+    width:100%;
+    box-shadow: inset 0 1px 2px rgba(61,55,46,.05);
+    transition:var(--transition);
+  }
+  textarea{ min-height:72px; resize:vertical; }
+  input:focus, textarea:focus, select:focus{ outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent); }
+  button:focus-visible, a:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  select{
+    appearance:none; -webkit-appearance:none;
+    padding-right:2.3rem; cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%233D372E' stroke-width='2'%3E%3Cpath d='M5 8l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right .8rem center; background-size:14px;
+  }
+
+  .search-row{ display:flex; gap:.6rem; }
+  @media (max-width:480px){ .search-row{ flex-direction:column; } }
+
+  .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:.9rem; margin-top:.25rem; }
+  .form-grid .full{ grid-column:1/-1; }
+  @media (max-width:520px){ .form-grid{ grid-template-columns:1fr; } }
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    font-weight:600; font-size:.85rem;
+    padding:.65rem 1.3rem;
+    border-radius:var(--radius-pill);
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:var(--transition);
+    white-space:nowrap;
+    text-decoration:none;
+    display:inline-flex; align-items:center; justify-content:center; gap:.35rem;
+  }
+  .btn:active{ transform:scale(.96); }
+  .btn-primary{ background:var(--accent); color:var(--accent-ink); }
+  .btn-primary:hover{ background:var(--accent-hover); }
+  .btn-outline{ background:transparent; border-color:var(--border); color:var(--text); }
+  .btn-outline:hover{ border-color:var(--accent-2); color:var(--accent-2); }
+  .btn-outline-danger{ background:transparent; border-color:var(--danger); color:var(--danger); }
+  .btn-outline-danger:hover{ background:var(--danger); color:var(--accent-2-ink); }
+  .btn-dark{ background:var(--accent-2); color:var(--accent-2-ink); }
+  .btn-dark:hover{ background:var(--accent-2-hover); }
+  .btn-danger-ghost{ background:transparent; color:var(--text-faint); border-color:transparent; padding:.45rem .6rem; }
+  .btn-danger-ghost:hover{ color:var(--danger); }
+  .btn-sm{ padding:.45rem .85rem; font-size:.78rem; }
+  .btn:disabled{ opacity:.55; cursor:not-allowed; }
+  .btn-push-end{ margin-left:auto; }
+
+  .section-actions{ display:flex; gap:.6rem; margin-top:1.25rem; flex-wrap:wrap; }
+
+  /* ---------- Search results ---------- */
+  .state-msg{ color:var(--text-dim); font-size:.9rem; padding:.5rem 0; }
+  .results-toolbar{ display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-bottom:.25rem; }
+  .results-count{ color:var(--text-dim); font-size:.85rem; font-weight:600; }
+  .jump-link{ display:inline-block; margin-top:1.25rem; color:var(--accent-2); font-size:.85rem; font-weight:600; text-decoration:none; }
+  .jump-link:hover{ text-decoration:underline; }
+  .row-link{ display:inline-block; margin-right:.6rem; font-size:.78rem; color:var(--accent-2); text-decoration:none; font-weight:600; }
+  .row-link:hover{ text-decoration:underline; }
+
+  .result-card{
+    position:relative;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:var(--radius-card);
+    padding:1.1rem 1.2rem 1.2rem;
+    margin-top:1rem;
+  }
+  .year-tab{
+    position:absolute; top:-.6rem; right:1rem;
+    background:var(--surface-3); border:1px solid var(--border);
+    color:var(--text-dim); font-size:.72rem;
+    padding:.15rem .55rem; border-radius:var(--radius-pill);
+  }
+  .result-title{ font-family:var(--font); font-size:1.05rem; font-weight:700; line-height:1.4; margin-right:3.5rem; }
+  .result-meta{ color:var(--text-dim); font-size:.85rem; margin-top:.4rem; }
+  .result-abstract{ color:var(--text-dim); font-size:.88rem; line-height:1.6; margin-top:.65rem; }
+  .result-actions{ display:flex; gap:.6rem; margin-top:1rem; flex-wrap:wrap; }
+
+  /* ---------- DOI + quote generator ---------- */
+  .doi-preview-box{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:var(--radius-card);
+    padding:1rem 1.1rem;
+    margin-top:1.1rem;
+  }
+  .doi-preview-box p.hint{ margin-bottom:.5rem; }
+  .doi-preview-box p.doi-sentence{ font-size:.95rem; line-height:1.6; }
+
+  /* ---------- Matrix table ---------- */
+  .table-wrapper{ overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius-card); }
+  table{ width:100%; border-collapse:collapse; font-size:.86rem; min-width:640px; }
+  thead th{
+    text-align:left; background:var(--surface-3); color:var(--text-dim);
+    font-weight:700; font-size:.78rem; padding:.75rem .85rem; border-bottom:1px solid var(--border);
+  }
+  tbody td{ padding:.75rem .85rem; border-bottom:1px solid var(--border-soft); vertical-align:top; color:var(--text); }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:hover{ background:rgba(61,55,46,.03); }
+  td[contenteditable="true"]{ cursor:text; min-width:160px; }
+  td[contenteditable="true"]:focus{ outline:2px solid var(--accent-2); outline-offset:-2px; background:rgba(61,55,46,.06); }
+  td[contenteditable="true"]:empty::before{ content:attr(data-placeholder); color:var(--text-faint); font-style:italic; }
+  .row-flash{ animation:flashIn 1.1s ease; }
+  @keyframes flashIn{ 0%{ background:rgba(140,150,87,.28); } 100%{ background:transparent; } }
+
+  @media (max-width:700px){
+    table, thead, tbody, th, td, tr{ display:block; }
+    table{ min-width:0; }
+    thead{ display:none; }
+    tbody tr{ border-bottom:1px solid var(--border); padding:.8rem 0; }
+    tbody tr:last-child{ border-bottom:none; }
+    tbody td{ border-bottom:none; padding:.35rem 1rem; }
+    tbody td::before{ content:attr(data-label); display:block; font-size:.72rem; color:var(--text-faint); font-weight:700; margin-bottom:.15rem; }
+    tbody td[data-label=""]::before{ content:none; }
+  }
+
+  /* ---------- Reference list ---------- */
+  .ref-list{ font-family:var(--font); font-size:.95rem; line-height:1.7; color:var(--text); }
+  .ref-entry{ padding-left:2em; text-indent:-2em; margin-bottom:.9rem; }
+  .ref-entry em{ font-style:italic; }
+  .ref-empty{ color:var(--text-dim); font-size:.9rem; }
+
+  /* ---------- Footer ---------- */
+  footer{ border-top:1px solid var(--border-soft); margin-top:1rem; padding:2rem 1.5rem 3rem; text-align:center; }
+  .footer-inner{ max-width:var(--maxw); margin:0 auto; }
+  .footer-note{ color:var(--text-faint); font-size:.8rem; max-width:48ch; margin:0 auto; }
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--surface-3); border:1px solid var(--border); color:var(--text);
+    padding:.7rem 1.2rem; border-radius:var(--radius-pill); font-size:.85rem;
+    opacity:0; pointer-events:none; transition:var(--transition);
+    box-shadow:var(--shadow-card); z-index:100; max-width:90vw;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.error{ border-color:var(--danger); }
+
+  @media (prefers-reduced-motion:reduce){
+    *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <h1>RRL Research Assistant</h1>
+      <p class="tagline">Search sources, build your literature matrix, and generate a reference list in the citation style you need.</p>
+    </div>
+    <div class="header-controls">
+      <div class="style-select-wrap">
+        <label for="styleSelect">Citation style</label>
+        <select id="styleSelect">
+          <option value="apa">APA 7th</option>
+          <option value="mla">MLA 9th</option>
+          <option value="chicago">Chicago 17th</option>
+          <option value="ieee">IEEE</option>
+        </select>
+      </div>
+      <div class="counter-chip" id="sourceCounter">0 sources collected</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="input-grid">
+    <div class="card" id="searchCard">
+      <h2>Search academic papers</h2>
+      <p class="hint">Powered by OpenAlex, a free, open catalog of scholarly works.</p>
+      <div class="search-row">
+        <input type="text" id="searchInput" placeholder="e.g. student motivation online learning" aria-label="Search academic papers">
+        <button type="button" class="btn btn-primary" id="searchBtn">Search academic papers</button>
+      </div>
+      <div id="searchState"></div>
+    </div>
+
+    <div class="card" id="manualCard">
+      <h2>Add a source manually</h2>
+      <p class="hint">Use this if a source isn't on OpenAlex, or you already have the details.</p>
+      <form id="manualForm" novalidate>
+        <div class="form-grid">
+          <div class="full">
+            <label for="mTitle">Paper title</label>
+            <input type="text" id="mTitle" required>
+          </div>
+          <div class="full">
+            <label for="mAuthors">Authors <span>(Last Name, F. M.; separate multiple with semicolons)</span></label>
+            <input type="text" id="mAuthors" placeholder="Santos, J. M.; Reyes, A. P." required>
+          </div>
+          <div>
+            <label for="mYear">Publication year</label>
+            <input type="number" id="mYear" min="1900" max="2100" required>
+          </div>
+          <div>
+            <label for="mMethodology">Methodology</label>
+            <input type="text" id="mMethodology" placeholder="e.g. Qualitative case study">
+          </div>
+          <div class="full">
+            <label for="mLink">Link <span>(optional, lets you open the source later)</span></label>
+            <input type="text" id="mLink" placeholder="https://...">
+          </div>
+          <div class="full">
+            <label for="mFindings">Key findings</label>
+            <textarea id="mFindings" placeholder="Summarize the main findings..."></textarea>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:1.1rem;">Add manual source to matrix</button>
+      </form>
+    </div>
+
+    <div class="card" id="doiCard">
+      <h2>Add from URL/DOI + quote</h2>
+      <p class="hint">Paste a paper's link or DOI plus a specific line — it gets looked up and turned into a citation for you.</p>
+      <form id="doiForm" novalidate>
+        <div style="margin-bottom:.9rem;">
+          <label for="doiInput">Paper URL or DOI</label>
+          <input type="text" id="doiInput" placeholder="https://doi.org/10.1038/s41586-020-2649-2" required>
+        </div>
+        <div>
+          <label for="doiQuote">Quote or key line</label>
+          <textarea id="doiQuote" placeholder="Paste the exact sentence you want to cite..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:1.1rem;">Generate RRL entry</button>
+      </form>
+      <div id="doiState" aria-live="polite"></div>
+      <div id="doiPreview"></div>
+    </div>
+  </section>
+
+  <section id="searchResults" aria-live="polite"></section>
+
+  <section class="card card-output" id="matrixSection">
+    <h2>Literature matrix</h2>
+    <p class="hint">Click any Methodology or Key findings cell to edit it directly.</p>
+    <div class="table-wrapper">
+      <table id="matrixTable">
+        <thead>
+          <tr>
+            <th>Author(s) &amp; year</th>
+            <th>Article title</th>
+            <th>Methodology / context</th>
+            <th>Key findings</th>
+            <th id="citeColHeader">In-text citation</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="matrixBody"></tbody>
+      </table>
+    </div>
+    <div class="section-actions">
+      <button type="button" class="btn btn-outline" id="copyTableBtn">Copy table for MS Word</button>
+      <button type="button" class="btn btn-outline" id="exportCsvBtn">Export CSV</button>
+      <button type="button" class="btn btn-outline-danger btn-push-end" id="clearAllBtn">Clear all sources</button>
+    </div>
+  </section>
+
+  <section class="card card-output">
+    <h2 id="refListHeading">APA 7th reference list</h2>
+    <p class="hint">Alphabetized automatically as you add sources.</p>
+    <div id="referenceList" class="ref-list"></div>
+    <div class="section-actions">
+      <button type="button" class="btn btn-outline" id="copyRefsBtn">Copy reference list</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <p class="footer-note">Built for students putting together a Review of Related Literature. Always double-check citations against your school's required format.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  // ---------- Config ----------
+  var OPENALEX_ENDPOINT = 'https://api.openalex.org/works';
+  var RESULTS_PER_PAGE = 50;
+  var styleLabels = { apa:'APA 7th', mla:'MLA 9th', chicago:'Chicago 17th', ieee:'IEEE' };
+
+  // ---------- State ----------
+  var sources = [];
+  var nextId = 1;
+  var lastSearchResults = [];
+  var currentStyle = 'apa';
+  var lastDoiPreview = null; // { source, quote }
+
+  // ---------- DOM ----------
+  var searchInput = document.getElementById('searchInput');
+  var searchBtn = document.getElementById('searchBtn');
+  var searchState = document.getElementById('searchState');
+  var searchResultsEl = document.getElementById('searchResults');
+  var manualForm = document.getElementById('manualForm');
+  var doiForm = document.getElementById('doiForm');
+  var doiInputEl = document.getElementById('doiInput');
+  var doiQuoteEl = document.getElementById('doiQuote');
+  var doiStateEl = document.getElementById('doiState');
+  var doiPreviewEl = document.getElementById('doiPreview');
+  var matrixBody = document.getElementById('matrixBody');
+  var referenceListEl = document.getElementById('referenceList');
+  var refListHeadingEl = document.getElementById('refListHeading');
+  var citeColHeaderEl = document.getElementById('citeColHeader');
+  var sourceCounter = document.getElementById('sourceCounter');
+  var copyTableBtn = document.getElementById('copyTableBtn');
+  var exportCsvBtn = document.getElementById('exportCsvBtn');
+  var copyRefsBtn = document.getElementById('copyRefsBtn');
+  var clearAllBtn = document.getElementById('clearAllBtn');
+  var styleSelectEl = document.getElementById('styleSelect');
+  var toastEl = document.getElementById('toast');
+
+  // ---------- Utilities ----------
+  function escapeHtml(str){
+    return String(str == null ? '' : str).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  var toastTimer = null;
+  function showToast(msg, type){
+    toastEl.textContent = msg;
+    toastEl.className = 'toast show' + (type === 'error' ? ' error' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.className = 'toast'; }, 2600);
+  }
+
+  function copyRich(html, plain){
+    if(window.ClipboardItem){
+      try{
+        var item = new ClipboardItem({
+          'text/html': new Blob([html], { type:'text/html' }),
+          'text/plain': new Blob([plain], { type:'text/plain' })
+        });
+        return navigator.clipboard.write([item]).then(function(){ return true; })
+          .catch(function(){ return navigator.clipboard.writeText(plain).then(function(){ return true; }).catch(function(){ return false; }); });
+      }catch(e){
+        return navigator.clipboard.writeText(plain).then(function(){ return true; }).catch(function(){ return false; });
+      }
+    }
+    return navigator.clipboard.writeText(plain).then(function(){ return true; }).catch(function(){ return false; });
+  }
+
+  function decodeAbstract(invertedIndex){
+    if(!invertedIndex) return '';
+    var words = [];
+    for(var word in invertedIndex){
+      if(!Object.prototype.hasOwnProperty.call(invertedIndex, word)) continue;
+      var positions = invertedIndex[word];
+      for(var i=0;i<positions.length;i++){ words[positions[i]] = word; }
+    }
+    return words.join(' ').trim();
+  }
+
+  function truncate(str, n){
+    if(!str) return '';
+    return str.length > n ? str.slice(0, n).trim() + '\u2026' : str;
+  }
+
+  function getPaperUrl(source){
+    return (source && (source.landingPage || source.doi || source.openalexId)) || '';
+  }
+
+  function formatAuthorAPA(displayName){
+    var parts = String(displayName || '').trim().split(/\s+/).filter(Boolean);
+    if(parts.length === 0) return 'Unknown Author';
+    if(parts.length === 1) return parts[0];
+    var last = parts[parts.length - 1];
+    var initials = parts.slice(0, -1).map(function(p){ return p[0] ? p[0].toUpperCase() + '.' : ''; }).join(' ');
+    return last + ', ' + initials;
+  }
+
+  function parseManualAuthors(raw){
+    return String(raw || '').split(';').map(function(s){ return s.trim(); }).filter(Boolean);
+  }
+
+  function lastNameOf(apaAuthor){
+    return String(apaAuthor || '').split(',')[0].trim() || 'Unknown';
+  }
+
+  function flipName(apaName){
+    var parts = String(apaName || '').split(',');
+    if(parts.length < 2) return apaName;
+    var last = parts[0].trim();
+    var initials = parts.slice(1).join(',').trim();
+    return (initials ? initials + ' ' : '') + last;
+  }
+
+  // ---------- Author joining, per style ----------
+  function joinAuthorsAPA(authorsArr){
+    var a = (authorsArr || []).filter(Boolean);
+    if(a.length === 0) return 'Unknown Author';
+    if(a.length === 1) return a[0];
+    if(a.length === 2) return a[0] + ', & ' + a[1];
+    if(a.length <= 20) return a.slice(0, -1).join(', ') + ', & ' + a[a.length - 1];
+    return a.slice(0, 19).join(', ') + ', ... ' + a[a.length - 1];
+  }
+
+  function invertFirstJoin(a, maxBeforeEtAl){
+    if(a.length === 1) return a[0] + '.';
+    if(a.length > maxBeforeEtAl) return a[0] + ', et al.';
+    var flippedRest = a.slice(1).map(flipName);
+    if(flippedRest.length === 1) return a[0] + ', and ' + flippedRest[0] + '.';
+    return a[0] + ', ' + flippedRest.slice(0, -1).join(', ') + ', and ' + flippedRest[flippedRest.length - 1] + '.';
+  }
+
+  function joinAuthorsIEEE(authorsArr){
+    var a = (authorsArr || []).filter(Boolean);
+    if(!a.length) return 'Unknown Author';
+    var flipped = a.map(flipName);
+    if(flipped.length > 6) return flipped[0] + ' et al.';
+    if(flipped.length === 1) return flipped[0];
+    if(flipped.length === 2) return flipped[0] + ' and ' + flipped[1];
+    return flipped.slice(0, -1).join(', ') + ', and ' + flipped[flipped.length - 1];
+  }
+
+  function joinAuthorsStyled(authorsArr, style){
+    var a = (authorsArr || []).filter(Boolean);
+    if(!a.length) return 'Unknown Author';
+    if(style === 'ieee') return joinAuthorsIEEE(a);
+    if(style === 'mla') return invertFirstJoin(a, 2);
+    if(style === 'chicago') return invertFirstJoin(a, 3);
+    return joinAuthorsAPA(a);
+  }
+
+  function referenceSortKey(source){
+    var first = source.authors && source.authors[0] ? lastNameOf(source.authors[0]) : source.title;
+    return String(first || '').toLowerCase();
+  }
+
+  // ---------- In-text citations, per style ----------
+  function inTextCitation(authorsArr, year){
+    var a = (authorsArr || []).filter(Boolean);
+    var y = year || 'n.d.';
+    if(a.length === 0) return '(' + y + ')';
+    if(a.length === 1) return lastNameOf(a[0]) + ' (' + y + ')';
+    if(a.length === 2) return lastNameOf(a[0]) + ' & ' + lastNameOf(a[1]) + ' (' + y + ')';
+    return lastNameOf(a[0]) + ' et al. (' + y + ')';
+  }
+
+  function inTextCitationStyled(source, style, number){
+    var authors = source.authors || [];
+    var year = source.year || 'n.d.';
+    if(style === 'ieee') return '[' + number + ']';
+    if(style === 'mla'){
+      if(!authors.length) return escapeHtml(source.title || 'Untitled');
+      if(authors.length === 1) return lastNameOf(authors[0]);
+      if(authors.length === 2) return lastNameOf(authors[0]) + ' and ' + lastNameOf(authors[1]);
+      return lastNameOf(authors[0]) + ' et al.';
+    }
+    return inTextCitation(authors, year);
+  }
+
+  function inTextParenthetical(source, style, number){
+    if(style === 'ieee') return '[' + number + ']';
+    var authors = source.authors || [];
+    var year = source.year || 'n.d.';
+    if(style === 'mla'){
+      if(!authors.length) return '';
+      if(authors.length === 1) return '(' + lastNameOf(authors[0]) + ')';
+      if(authors.length === 2) return '(' + lastNameOf(authors[0]) + ' and ' + lastNameOf(authors[1]) + ')';
+      return '(' + lastNameOf(authors[0]) + ' et al.)';
+    }
+    if(!authors.length) return '(' + year + ')';
+    if(authors.length === 1) return '(' + lastNameOf(authors[0]) + ', ' + year + ')';
+    if(authors.length === 2) return '(' + lastNameOf(authors[0]) + ' & ' + lastNameOf(authors[1]) + ', ' + year + ')';
+    return '(' + lastNameOf(authors[0]) + ' et al., ' + year + ')';
+  }
+
+  function ieeeNumberFor(work){
+    var existing = sources.filter(function(s){ return work.openalexId && s.openalexId === work.openalexId; })[0];
+    if(existing) return sources.indexOf(existing) + 1;
+    return sources.length + 1;
+  }
+
+  // ---------- Reference formatting, per style ----------
+  function formatReferenceAPA(source){
+    var authorsStr = escapeHtml(joinAuthorsAPA(source.authors));
+    var year = escapeHtml(source.year || 'n.d.');
+    var html = authorsStr + ' (' + year + '). ' + escapeHtml(source.title || 'Untitled source') + '.';
+    if(source.journal){
+      html += ' <em>' + escapeHtml(source.journal) + '</em>';
+      if(source.volume){
+        html += ', <em>' + escapeHtml(source.volume) + '</em>';
+        if(source.issue) html += '(' + escapeHtml(source.issue) + ')';
+      }
+      if(source.pages) html += ', ' + escapeHtml(source.pages);
+      html += '.';
+    }
+    if(source.doi){ html += ' ' + escapeHtml(source.doi); }
+    return html;
+  }
+
+  function formatReferenceMLA(source){
+    var authors = escapeHtml(invertFirstJoin((source.authors||[]).length ? source.authors : ['Unknown Author'], 2));
+    var title = escapeHtml(source.title || 'Untitled source');
+    var year = escapeHtml(source.year || 'n.d.');
+    var html = authors + ' "' + title + '."';
+    if(source.journal){
+      html += ' <em>' + escapeHtml(source.journal) + '</em>';
+      if(source.volume) html += ', vol. ' + escapeHtml(source.volume);
+      if(source.issue) html += ', no. ' + escapeHtml(source.issue);
+      html += ', ' + year;
+      if(source.pages) html += ', pp. ' + escapeHtml(source.pages);
+      html += '.';
+    }else{
+      html += ' ' + year + '.';
+    }
+    if(source.doi) html += ' ' + escapeHtml(source.doi) + '.';
+    return html;
+  }
+
+  function formatReferenceChicago(source){
+    var authors = escapeHtml(invertFirstJoin((source.authors||[]).length ? source.authors : ['Unknown Author'], 3));
+    var title = escapeHtml(source.title || 'Untitled source');
+    var year = escapeHtml(source.year || 'n.d.');
+    var html = authors + ' ' + year + '. "' + title + '."';
+    if(source.journal){
+      html += ' <em>' + escapeHtml(source.journal) + '</em>';
+      if(source.volume) html += ' ' + escapeHtml(source.volume);
+      if(source.issue) html += ', no. ' + escapeHtml(source.issue);
+      if(source.pages) html += ': ' + escapeHtml(source.pages);
+      html += '.';
+    }
+    if(source.doi) html += ' ' + escapeHtml(source.doi) + '.';
+    return html;
+  }
+
+  function formatReferenceIEEE(source, number){
+    var authors = escapeHtml(joinAuthorsIEEE(source.authors));
+    var title = escapeHtml(source.title || 'Untitled source');
+    var year = escapeHtml(source.year || 'n.d.');
+    var html = '[' + number + '] ' + authors + ', "' + title + '," ';
+    if(source.journal){
+      html += '<em>' + escapeHtml(source.journal) + '</em>';
+      if(source.volume) html += ', vol. ' + escapeHtml(source.volume);
+      if(source.issue) html += ', no. ' + escapeHtml(source.issue);
+      if(source.pages) html += ', pp. ' + escapeHtml(source.pages);
+      html += ', ' + year + '.';
+    }else{
+      html += year + '.';
+    }
+    if(source.doi){
+      var bare = source.doi.replace(/^https?:\/\/doi\.org\//i, '');
+      html += ' doi: ' + escapeHtml(bare) + '.';
+    }
+    return html;
+  }
+
+  function formatReferenceHTML(source, style, number){
+    style = style || currentStyle;
+    if(number == null) number = sources.indexOf(source) + 1;
+    if(style === 'mla') return formatReferenceMLA(source);
+    if(style === 'chicago') return formatReferenceChicago(source);
+    if(style === 'ieee') return formatReferenceIEEE(source, number);
+    return formatReferenceAPA(source);
+  }
+
+  function formatReferencePlain(source, style, number){
+    return formatReferenceHTML(source, style, number).replace(/<\/?em>/g, '');
+  }
+
+  function buildNarrativeSentence(source, quote, style, number){
+    var q = String(quote || '').trim();
+    if(style === 'ieee') return '"' + q + '" [' + number + '].';
+    if(style === 'mla'){
+      var authors = source.authors || [];
+      var who = !authors.length ? 'the source' : (authors.length === 1 ? lastNameOf(authors[0]) : (authors.length === 2 ? lastNameOf(authors[0]) + ' and ' + lastNameOf(authors[1]) : lastNameOf(authors[0]) + ' et al.'));
+      return 'According to ' + who + ', "' + q + '"';
+    }
+    var intext = inTextCitation(source.authors, source.year);
+    return 'According to ' + intext + ', "' + q + '"';
+  }
+
+  // ---------- OpenAlex: work parsing ----------
+  function parseWork(work){
+    var authorships = work.authorships || [];
+    var authors = authorships.map(function(a){ return formatAuthorAPA(a.author && a.author.display_name); });
+    var src = (work.primary_location && work.primary_location.source) || work.host_venue || {};
+    var biblio = work.biblio || {};
+    var abstract = decodeAbstract(work.abstract_inverted_index);
+    var concepts = (work.concepts || []).slice(0, 3).map(function(c){ return c.display_name; }).join(', ');
+    var landingPage = (work.primary_location && work.primary_location.landing_page_url) || '';
+    return {
+      openalexId: work.id,
+      title: work.title || work.display_name || 'Untitled work',
+      authors: authors,
+      year: work.publication_year || null,
+      journal: src.display_name || '',
+      volume: biblio.volume || '',
+      issue: biblio.issue || '',
+      pages: (biblio.first_page && biblio.last_page) ? (biblio.first_page + '\u2013' + biblio.last_page) : '',
+      doi: work.doi || '',
+      abstract: abstract,
+      concepts: concepts,
+      landingPage: landingPage
+    };
+  }
+
+  // ---------- Search ----------
+  function searchPapers(){
+    var query = searchInput.value.trim();
+    if(!query){ showToast('Type something to search for.', 'error'); return; }
+
+    searchBtn.disabled = true;
+    searchBtn.textContent = 'Searching\u2026';
+    searchState.innerHTML = '<p class="state-msg">Searching OpenAlex\u2026</p>';
+    searchResultsEl.innerHTML = '';
+
+    var url = OPENALEX_ENDPOINT + '?search=' + encodeURIComponent(query) + '&per_page=' + RESULTS_PER_PAGE;
+
+    fetch(url).then(function(res){
+      if(!res.ok) throw new Error('Request failed (' + res.status + ')');
+      return res.json();
+    }).then(function(data){
+      var works = data.results || [];
+      lastSearchResults = works.map(parseWork);
+      searchState.innerHTML = '';
+      renderSearchResults(lastSearchResults);
+    }).catch(function(err){
+      searchState.innerHTML = '<p class="state-msg">Couldn\'t reach OpenAlex right now (' + escapeHtml(err.message) + '). Check your connection and try again, or use manual entry below.</p>';
+    }).finally(function(){
+      searchBtn.disabled = false;
+      searchBtn.textContent = 'Search academic papers';
+    });
+  }
+
+  function isAlreadyAdded(work){
+    return !!(work.openalexId && sources.some(function(s){ return s.openalexId === work.openalexId; }));
+  }
+
+  function renderSearchResults(works){
+    if(!works.length){
+      searchResultsEl.innerHTML = '<p class="state-msg">No results found. Try different keywords, or add the source manually.</p>';
+      return;
+    }
+    var citeLabel = 'Copy ' + styleLabels[currentStyle] + ' citation';
+    var allAdded = works.every(isAlreadyAdded);
+    var toolbar = '<div class="results-toolbar">' +
+      '<span class="results-count">' + works.length + ' result' + (works.length === 1 ? '' : 's') + ' found</span>' +
+      '<button type="button" class="btn btn-sm btn-dark" data-action="add-all"' + (allAdded ? ' disabled' : '') + '>' +
+        (allAdded ? '\u2713 All added to matrix' : 'Add all ' + works.length + ' to matrix') +
+      '</button>' +
+    '</div>';
+
+    var cards = works.map(function(w, idx){
+      var snippet = w.abstract ? truncate(w.abstract, 260) : (w.concepts ? 'Related concepts: ' + w.concepts : 'No abstract available.');
+      var added = isAlreadyAdded(w);
+      var url = getPaperUrl(w);
+      var addBtn = added
+        ? '<button type="button" class="btn btn-sm btn-dark" disabled>\u2713 Added to matrix</button>'
+        : '<button type="button" class="btn btn-sm btn-dark" data-action="add-matrix" data-idx="' + idx + '">Add to RRL matrix</button>';
+      var openLink = url
+        ? '<a class="btn btn-sm btn-outline" href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">Open original paper \u2197</a>'
+        : '';
+      return '<article class="result-card">' +
+        '<span class="year-tab">' + escapeHtml(w.year || 'n.d.') + '</span>' +
+        '<h3 class="result-title">' + escapeHtml(w.title) + '</h3>' +
+        '<p class="result-meta">' + escapeHtml(w.authors.length ? w.authors.join('; ') : 'Unknown author') + (w.journal ? ' \u00b7 ' + escapeHtml(w.journal) : '') + '</p>' +
+        '<p class="result-abstract">' + escapeHtml(snippet) + '</p>' +
+        '<div class="result-actions">' +
+          '<button type="button" class="btn btn-sm btn-outline" data-action="copy-cite" data-idx="' + idx + '">' + escapeHtml(citeLabel) + '</button>' +
+          '<button type="button" class="btn btn-sm btn-outline" data-action="copy-quote" data-idx="' + idx + '">Copy quote + citation</button>' +
+          openLink +
+          addBtn +
+        '</div>' +
+      '</article>';
+    }).join('');
+
+    var jumpLink = '<a href="#matrixSection" class="jump-link">\u2193 Jump to your matrix</a>';
+
+    searchResultsEl.innerHTML = toolbar + cards + jumpLink;
+  }
+
+  function refreshSearchCards(){
+    if(lastSearchResults.length) renderSearchResults(lastSearchResults);
+  }
+
+  searchResultsEl.addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-action]');
+    if(!btn) return;
+
+    if(btn.dataset.action === 'add-all'){
+      addAllResults();
+      return;
+    }
+
+    var idx = Number(btn.dataset.idx);
+    var work = lastSearchResults[idx];
+    if(!work) return;
+
+    if(btn.dataset.action === 'copy-cite'){
+      var num = ieeeNumberFor(work);
+      copyRich(formatReferenceHTML(work, currentStyle, num), formatReferencePlain(work, currentStyle, num)).then(function(ok){
+        showToast(ok ? 'Citation copied.' : "Couldn't copy \u2014 try again.", ok ? null : 'error');
+      });
+    }else if(btn.dataset.action === 'copy-quote'){
+      if(!work.abstract){ showToast('No abstract available to quote for this source.', 'error'); return; }
+      var snippet = truncate(work.abstract, 260);
+      var n = ieeeNumberFor(work);
+      var cite = inTextParenthetical(work, currentStyle, n);
+      var text = '"' + snippet + '" ' + cite + '.';
+      navigator.clipboard.writeText(text).then(function(){ showToast('Quote and citation copied.'); }).catch(function(){ showToast("Couldn't copy \u2014 try again.", 'error'); });
+    }else if(btn.dataset.action === 'add-matrix'){
+      addSourceFromWork(work);
+    }
+  });
+
+  function createSourceFromWork(work){
+    if(isAlreadyAdded(work)) return null;
+    var source = Object.assign({}, work, { id: nextId++, type: 'search', methodology: '', findings: '' });
+    sources.push(source);
+    return source;
+  }
+
+  function addSourceFromWork(work){
+    var source = createSourceFromWork(work);
+    if(!source){ showToast('That source is already in your matrix.', 'error'); return; }
+    renderAll();
+    showToast('Added to matrix \u2014 fill in Methodology and Findings when ready.');
+    flashRow(source.id);
+  }
+
+  function addAllResults(){
+    if(!lastSearchResults.length) return;
+    var addedCount = 0, skipped = 0, firstAddedId = null;
+    lastSearchResults.forEach(function(work){
+      var source = createSourceFromWork(work);
+      if(source){
+        addedCount++;
+        if(firstAddedId == null) firstAddedId = source.id;
+      }else{
+        skipped++;
+      }
+    });
+    renderAll();
+    if(addedCount === 0){ showToast('All of these are already in your matrix.', 'error'); return; }
+    var msg = 'Added ' + addedCount + (addedCount === 1 ? ' source' : ' sources') + ' to your matrix.';
+    if(skipped) msg += ' (' + skipped + ' already there.)';
+    showToast(msg);
+    if(firstAddedId != null) flashRow(firstAddedId);
+  }
+
+  // ---------- Manual entry ----------
+  manualForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var title = document.getElementById('mTitle').value.trim();
+    var authorsRaw = document.getElementById('mAuthors').value.trim();
+    var year = document.getElementById('mYear').value.trim();
+    var methodology = document.getElementById('mMethodology').value.trim();
+    var link = document.getElementById('mLink').value.trim();
+    var findings = document.getElementById('mFindings').value.trim();
+
+    if(!title || !authorsRaw || !year){
+      showToast('Title, authors, and year are required.', 'error');
+      return;
+    }
+
+    var source = {
+      id: nextId++, type: 'manual',
+      title: title, authors: parseManualAuthors(authorsRaw), year: year,
+      journal: '', volume: '', issue: '', pages: '', doi: '', landingPage: link,
+      methodology: methodology, findings: findings
+    };
+    sources.push(source);
+    renderAll();
+    manualForm.reset();
+    showToast('Manual source added to matrix.');
+    flashRow(source.id);
+  });
+
+  // ---------- URL/DOI + quote generator ----------
+  function extractDOI(input){
+    var m = String(input || '').match(/10\.\d{4,9}\/[^\s"'<>]+/);
+    if(!m) return null;
+    return m[0].replace(/[.,;)\]]+$/, '');
+  }
+
+  doiForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var rawInput = doiInputEl.value.trim();
+    var quote = doiQuoteEl.value.trim();
+    if(!rawInput || !quote){ showToast('Enter a URL/DOI and a quote first.', 'error'); return; }
+
+    var doi = extractDOI(rawInput);
+    if(!doi){
+      doiStateEl.innerHTML = '<p class="state-msg">Couldn\'t find a DOI in that link. Try pasting the DOI directly (e.g., 10.1038/xxxx), or use manual entry above.</p>';
+      return;
+    }
+
+    doiStateEl.innerHTML = '<p class="state-msg">Looking up this paper on OpenAlex\u2026</p>';
+    doiPreviewEl.innerHTML = '';
+
+    fetch(OPENALEX_ENDPOINT + '/doi:' + encodeURIComponent(doi)).then(function(res){
+      if(!res.ok) throw new Error('not found');
+      return res.json();
+    }).then(function(data){
+      var work = parseWork(data);
+      doiStateEl.innerHTML = '';
+      var source = addSourceFromDOI(work, quote);
+      if(source){
+        lastDoiPreview = { source: source, quote: quote };
+        renderDoiPreview(source, quote);
+        doiForm.reset();
+        showToast('Added to matrix from DOI lookup.');
+      }
+    }).catch(function(){
+      doiStateEl.innerHTML = '<p class="state-msg">Couldn\'t find that paper on OpenAlex. Double-check the DOI, or add it manually above.</p>';
+    });
+  });
+
+  function addSourceFromDOI(work, quote){
+    var existing = sources.filter(function(s){ return work.openalexId && s.openalexId === work.openalexId; })[0];
+    if(existing){
+      showToast('That source is already in your matrix.', 'error');
+      return existing;
+    }
+    var source = Object.assign({}, work, { id: nextId++, type: 'doi', methodology: '', findings: quote });
+    sources.push(source);
+    renderAll();
+    flashRow(source.id);
+    return source;
+  }
+
+  function renderDoiPreview(source, quote){
+    var num = sources.indexOf(source) + 1;
+    var sentence = buildNarrativeSentence(source, quote, currentStyle, num);
+    var url = getPaperUrl(source);
+    var openLink = url ? '<p style="margin-top:.5rem;"><a class="row-link" href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">Open original paper \u2197</a></p>' : '';
+    doiPreviewEl.innerHTML = '<div class="doi-preview-box">' +
+      '<p class="hint">Generated RRL paragraph</p>' +
+      '<p class="doi-sentence">' + escapeHtml(sentence) + '</p>' +
+      '<button type="button" class="btn btn-sm btn-outline" id="copyDoiSentence" style="margin-top:.75rem;">Copy RRL paragraph</button>' +
+      openLink +
+    '</div>';
+    document.getElementById('copyDoiSentence').addEventListener('click', function(){
+      navigator.clipboard.writeText(sentence).then(function(){ showToast('Paragraph copied.'); }).catch(function(){ showToast("Couldn't copy \u2014 try again.", 'error'); });
+    });
+  }
+
+  // ---------- Matrix rendering ----------
+  function renderMatrix(){
+    if(!sources.length){
+      matrixBody.innerHTML = '<tr><td colspan="6" class="state-msg" style="text-align:center;padding:2.5rem 1rem;">No sources yet \u2014 search above or add one to start your matrix.</td></tr>';
+      return;
+    }
+    matrixBody.innerHTML = sources.map(function(s){
+      var authorYear = joinAuthorsAPA(s.authors) + ' (' + (s.year || 'n.d.') + ')';
+      var num = sources.indexOf(s) + 1;
+      var url = getPaperUrl(s);
+      var openLink = url ? '<a class="row-link" href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">Open \u2197</a>' : '';
+      return '<tr data-id="' + s.id + '">' +
+        '<td data-label="Author(s) & year">' + escapeHtml(authorYear) + '</td>' +
+        '<td data-label="Article title">' + escapeHtml(s.title) + '</td>' +
+        '<td data-label="Methodology / context" contenteditable="true" data-field="methodology" data-placeholder="Click to add methodology\u2026">' + escapeHtml(s.methodology) + '</td>' +
+        '<td data-label="Key findings" contenteditable="true" data-field="findings" data-placeholder="Click to add key findings\u2026">' + escapeHtml(s.findings) + '</td>' +
+        '<td data-label="' + escapeHtml(citeColHeaderEl.textContent) + '">' + escapeHtml(inTextCitationStyled(s, currentStyle, num)) + '</td>' +
+        '<td data-label="">' + openLink + '<button type="button" class="btn btn-sm btn-danger-ghost" data-action="remove" title="Remove source">Remove</button></td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  matrixBody.addEventListener('blur', function(e){
+    var td = e.target.closest && e.target.closest('td[contenteditable]');
+    if(!td) return;
+    var tr = td.closest('tr');
+    var id = Number(tr.dataset.id);
+    var field = td.dataset.field;
+    var value = td.textContent.trim();
+    if(!value){ td.innerHTML = ''; } // clears stray <br> so the empty placeholder shows again
+    var source = sources.filter(function(s){ return s.id === id; })[0];
+    if(source){ source[field] = value; }
+  }, true);
+
+  matrixBody.addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-action="remove"]');
+    if(!btn) return;
+    var tr = btn.closest('tr');
+    var id = Number(tr.dataset.id);
+    sources = sources.filter(function(s){ return s.id !== id; });
+    renderAll();
+    showToast('Source removed.');
+  });
+
+  clearAllBtn.addEventListener('click', function(){
+    if(!sources.length){ showToast('Your matrix is already empty.', 'error'); return; }
+    var ok = window.confirm('Remove all ' + sources.length + ' source' + (sources.length === 1 ? '' : 's') + ' from your matrix? This can\'t be undone.');
+    if(!ok) return;
+    sources = [];
+    renderAll();
+    showToast('Matrix cleared.');
+  });
+
+  function flashRow(id){
+    requestAnimationFrame(function(){
+      var tr = matrixBody.querySelector('tr[data-id="' + id + '"]');
+      if(tr) tr.classList.add('row-flash');
+    });
+  }
+
+  // ---------- Reference list ----------
+  function renderReferenceList(){
+    refListHeadingEl.textContent = styleLabels[currentStyle] + ' reference list';
+    if(!sources.length){
+      referenceListEl.innerHTML = '<p class="ref-empty">Your reference list will appear here once you add sources.</p>';
+      return;
+    }
+    var list = currentStyle === 'ieee' ? sources.slice() : sources.slice().sort(function(a, b){ return referenceSortKey(a).localeCompare(referenceSortKey(b)); });
+    referenceListEl.innerHTML = list.map(function(s){
+      var num = sources.indexOf(s) + 1;
+      return '<p class="ref-entry">' + formatReferenceHTML(s, currentStyle, num) + '</p>';
+    }).join('');
+  }
+
+  function updateCiteColumnHeader(){
+    citeColHeaderEl.textContent = currentStyle === 'ieee' ? 'Reference #' : 'In-text citation';
+  }
+
+  // ---------- Copy / export ----------
+  copyTableBtn.addEventListener('click', function(){
+    if(!sources.length){ showToast('Add at least one source first.', 'error'); return; }
+    var citeLabel = citeColHeaderEl.textContent;
+    var headers = ['Author(s) & Year', 'Article Title', 'Methodology / Context', 'Key Findings', citeLabel];
+    var html = '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-family:Montserrat,Calibri,Arial,sans-serif;font-size:11pt;"><thead><tr>' +
+      headers.map(function(h){ return '<th style="background:#E4D5B8;color:#3D372E;text-align:left;">' + escapeHtml(h) + '</th>'; }).join('') +
+      '</tr></thead><tbody>';
+    var plain = headers.join('\t') + '\n';
+    sources.forEach(function(s){
+      var authorYear = joinAuthorsAPA(s.authors) + ' (' + (s.year || 'n.d.') + ')';
+      var num = sources.indexOf(s) + 1;
+      var cite = inTextCitationStyled(s, currentStyle, num);
+      var row = [authorYear, s.title, s.methodology, s.findings, cite];
+      html += '<tr>' + row.map(function(c){ return '<td>' + escapeHtml(c || '') + '</td>'; }).join('') + '</tr>';
+      plain += row.map(function(c){ return (c || '').replace(/\t|\n/g, ' '); }).join('\t') + '\n';
+    });
+    html += '</tbody></table>';
+    copyRich(html, plain).then(function(ok){
+      showToast(ok ? 'Table copied \u2014 paste into Word or Docs.' : "Couldn't copy \u2014 try again.", ok ? null : 'error');
+    });
+  });
+
+  exportCsvBtn.addEventListener('click', function(){
+    if(!sources.length){ showToast('Add at least one source first.', 'error'); return; }
+    var citeLabel = citeColHeaderEl.textContent;
+    var headers = ['Author(s) & Year', 'Article Title', 'Methodology / Context', 'Key Findings', citeLabel];
+    function csvEscape(v){ return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }
+    var csv = headers.map(csvEscape).join(',') + '\r\n';
+    sources.forEach(function(s){
+      var authorYear = joinAuthorsAPA(s.authors) + ' (' + (s.year || 'n.d.') + ')';
+      var num = sources.indexOf(s) + 1;
+      var cite = inTextCitationStyled(s, currentStyle, num);
+      csv += [authorYear, s.title, s.methodology, s.findings, cite].map(csvEscape).join(',') + '\r\n';
+    });
+    var blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    var d = new Date();
+    var stamp = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    a.href = url;
+    a.download = 'RRL_Literature_Matrix_' + stamp + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('CSV downloaded.');
+  });
+
+  copyRefsBtn.addEventListener('click', function(){
+    if(!sources.length){ showToast('Add at least one source first.', 'error'); return; }
+    var list = currentStyle === 'ieee' ? sources.slice() : sources.slice().sort(function(a, b){ return referenceSortKey(a).localeCompare(referenceSortKey(b)); });
+    var html = list.map(function(s){
+      var num = sources.indexOf(s) + 1;
+      return '<p style="margin:0 0 10px 0;padding-left:0.5in;text-indent:-0.5in;font-family:Montserrat,Calibri,Arial,sans-serif;font-size:12pt;line-height:2;">' + formatReferenceHTML(s, currentStyle, num) + '</p>';
+    }).join('');
+    var plain = list.map(function(s){ var num = sources.indexOf(s) + 1; return formatReferencePlain(s, currentStyle, num); }).join('\n\n');
+    copyRich(html, plain).then(function(ok){
+      showToast(ok ? 'Reference list copied \u2014 paste into Word or Docs.' : "Couldn't copy \u2014 try again.", ok ? null : 'error');
+    });
+  });
+
+  // ---------- Style switching ----------
+  styleSelectEl.addEventListener('change', function(){
+    currentStyle = styleSelectEl.value;
+    renderAll();
+    if(lastDoiPreview && sources.indexOf(lastDoiPreview.source) !== -1){
+      renderDoiPreview(lastDoiPreview.source, lastDoiPreview.quote);
+    }else{
+      lastDoiPreview = null;
+      doiPreviewEl.innerHTML = '';
+    }
+  });
+
+  // ---------- Render orchestration ----------
+  function renderAll(){
+    updateCiteColumnHeader();
+    renderMatrix();
+    renderReferenceList();
+    refreshSearchCards();
+    sourceCounter.textContent = sources.length + (sources.length === 1 ? ' source collected' : ' sources collected');
+  }
+
+  searchBtn.addEventListener('click', searchPapers);
+  searchInput.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); searchPapers(); } });
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
